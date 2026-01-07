@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Any, Tuple
 import math
+from .barrier_metrics import BarrierMetrics
 
 class Barrier(ABC):
     """
@@ -11,6 +12,8 @@ class Barrier(ABC):
         self.limit = limit
         self.logger = logger
         self.released = False
+        # 性能指标收集器（由子类在初始化时设置正确的名称）
+        self.metrics = None
         # self.sense 移除，由各子类自行维护或仅用于 Debug
 
     @abstractmethod
@@ -44,6 +47,12 @@ class Barrier(ABC):
     def reset_released_flag(self):
         """重置UI显示的释放标志"""
         self.released = False
+    
+    def get_metrics(self) -> Dict[str, Any]:
+        """获取性能指标统计"""
+        if self.metrics:
+            return self.metrics.get_statistics()
+        return {}
 
 
 class CentralizedBarrier(Barrier):
@@ -53,9 +62,14 @@ class CentralizedBarrier(Barrier):
     def __init__(self, limit: int, logger=None):
         super().__init__(limit, logger)
         self.count = 0
-        self.sense = False 
+        self.sense = False
+        # 初始化性能指标收集器
+        self.metrics = BarrierMetrics("CentralizedBarrier") 
 
     def arrive(self, block_id: int) -> bool:
+        # 记录竞争次数（集中式栅栏的竞争发生在全局计数器）
+        self.metrics.record_contention(1)
+        
         self.count += 1
         
         if self.logger:
@@ -76,6 +90,10 @@ class CentralizedBarrier(Barrier):
         self.sense = not self.sense
         self.count = 0
         self.released = True
+        
+        # 记录释放时间（使用当前tick，由外部传入或使用占位符）
+        # 注意：这里无法获取当前tick，需要在调用时传入或从外部获取
+        # 暂时使用0作为占位符，后续优化
         
         if self.logger:
             self.logger.log_event("BARRIER_RELEASE", {
@@ -124,6 +142,11 @@ class TreeBarrier(Barrier):
         self.nodes = [] # 存储所有节点以便可视化
         self.leaves = {} # map block_id -> leaf_node
         self._build_tree(limit)
+        # 初始化性能指标收集器
+        self.metrics = BarrierMetrics("TreeBarrier")
+        # 计算树深度
+        tree_depth = math.ceil(math.log2(limit)) + 1 if limit > 0 else 0
+        self.metrics.set_tree_depth(tree_depth)
         
     def _build_tree(self, num_blocks):
         # 这是一个简化版的构建，假设完全二叉树
@@ -173,6 +196,11 @@ class TreeBarrier(Barrier):
             return False # Should not happen
             
         node = self.leaves[block_id]
+        
+        # 记录竞争次数（树形栅栏的竞争分散在各个节点）
+        # 粗略估算：每层都有一次竞争
+        contention_estimate = math.ceil(math.log2(self.limit)) if self.limit > 1 else 1
+        self.metrics.record_contention(contention_estimate)
         
         # 递归（或循环）向上更新
         # 简化模拟：假设瞬间向上传播，不模拟中间的网络延迟
@@ -254,7 +282,7 @@ class ButterflyBarrier(Barrier):
     """
     def __init__(self, limit: int, logger=None):
         super().__init__(limit, logger)
-        self.num_stages = math.ceil(math.log2(limit))
+        self.num_stages = math.ceil(math.log2(limit)) if limit > 1 else 1
         # 存储每个 Block 当前处于第几个阶段
         # block_stages[id] = k (0..num_stages)
         # 当 == num_stages 时，表示该 Block 完成了本轮 Barrier
@@ -271,6 +299,10 @@ class ButterflyBarrier(Barrier):
         # 更好的方式：使用奇偶轮次或者 incrementing epoch
         self.epoch = 0 # 当前的栅栏轮次
         self.arrived_state = {} #(epoch, stage, block_id) -> bool
+        # 初始化性能指标收集器
+        self.metrics = BarrierMetrics("ButterflyBarrier")
+        # 记录通信轮数（每次同步需要log2(N)轮）
+        self.metrics.communication_rounds = self.num_stages
 
     def arrive(self, block_id: int) -> bool:
         # Butterfly 比较特殊，Block会多次调用 arrive (每完成一个 stage)
@@ -302,6 +334,9 @@ class ButterflyBarrier(Barrier):
         # 不可以，A 必须等所有 stages 完成。
         # 所以对于 Block 而言，依然是“进 -> 等 -> 出”。
         # 区别在于内部状态。
+        
+        # 记录竞争次数（蝴蝶形的竞争较低，约log2(N)次）
+        self.metrics.record_contention(self.num_stages)
         
         self.block_stages[block_id] = 0 # Reset stage
         self._record_arrival(block_id)

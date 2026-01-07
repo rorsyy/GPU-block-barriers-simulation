@@ -43,8 +43,26 @@ async function fetchState() {
         const data = await res.json();
         updateUI(data);
         setConnected(true);
+        
+        // 同时获取性能指标（如果数据中包含则直接使用，否则单独获取）
+        if (data.metrics) {
+            updateMetrics(data.metrics);
+        } else {
+            fetchMetrics(); // 单独获取
+        }
     } catch (e) {
         setConnected(false);
+    }
+}
+
+async function fetchMetrics() {
+    try {
+        const res = await fetch(`${API_BASE}/metrics`);
+        if (!res.ok) return;
+        const metrics = await res.json();
+        updateMetrics(metrics);
+    } catch (e) {
+        // 静默失败
     }
 }
 
@@ -91,6 +109,17 @@ function renderBlocks(blocks) {
         `;
         els.grid.appendChild(card);
     });
+}
+
+function updateMetrics(metrics) {
+    // 更新性能指标显示
+    const safeProp = (obj, prop, def = '0') => (obj && obj[prop] !== undefined) ? obj[prop] : def;
+    
+    document.getElementById('metric-sync-count').textContent = safeProp(metrics, 'sync_count');
+    document.getElementById('metric-avg-latency').textContent = safeProp(metrics, 'avg_latency') + ' ticks';
+    document.getElementById('metric-avg-wait').textContent = safeProp(metrics, 'avg_wait_time') + ' ticks';
+    document.getElementById('metric-contention').textContent = safeProp(metrics, 'contention_count');
+    document.getElementById('metric-throughput').textContent = safeProp(metrics, 'throughput') + ' /s';
 }
 
 function log(msg) {

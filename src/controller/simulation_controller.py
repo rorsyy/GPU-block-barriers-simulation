@@ -37,6 +37,21 @@ class SimulationAPIHandler(BaseHTTPRequestHandler):
             self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             self.wfile.write(json.dumps(snapshot).encode('utf-8'))
+        
+        elif self.path == '/api/metrics':
+            # 获取栅栏性能指标
+            metrics = {}
+            try:
+                metrics = self.server.controller.model.get_barrier_metrics()
+            except Exception as e:
+                metrics = {"error": str(e)}
+            
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps(metrics).encode('utf-8'))
+        
         else:
             # Serve Static Files
             file_path = self.path

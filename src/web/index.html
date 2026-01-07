@@ -36,11 +36,41 @@
                 <h3>Configuration (Reset)</h3>
                 <label for="select-barrier">Barrier Type:</label>
                 <select id="select-barrier">
-                    <option value="CENTRALIZED">Centralized</option>
-                    <option value="TREE">Tree</option>
-                    <option value="BUTTERFLY">Butterfly</option>
+                    <option value="CENTRALIZED">Centralized (集中式)</option>
+                    <option value="TREE">Tree (树形)</option>
+                    <option value="BUTTERFLY">Butterfly (蝴蝶形)</option>
+                    <option value="DISSEMINATION">Dissemination (传播式)</option>
+                    <option value="TOURNAMENT">Tournament (锦标赛)</option>
+                    <option value="COMBINING_TREE">Combining Tree (组合树)</option>
+                    <option value="STATIC_TREE">Static Tree (静态树)</option>
                 </select>
                 <button id="btn-reset" class="btn-danger">Reset & Apply</button>
+            </div>
+            
+            <div class="control-group">
+                <h3>Performance Metrics (性能指标)</h3>
+                <div id="metrics-panel" class="metrics-panel">
+                    <div class="metric-item">
+                        <span class="metric-label">Sync Count:</span>
+                        <span id="metric-sync-count" class="metric-value">0</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Avg Latency:</span>
+                        <span id="metric-avg-latency" class="metric-value">0</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Avg Wait Time:</span>
+                        <span id="metric-avg-wait" class="metric-value">0</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Contention Count:</span>
+                        <span id="metric-contention" class="metric-value">0</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Throughput:</span>
+                        <span id="metric-throughput" class="metric-value">0</span>
+                    </div>
+                </div>
             </div>
             
             <div class="log-panel">

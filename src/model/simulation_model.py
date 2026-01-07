@@ -2,6 +2,10 @@ from enum import Enum, auto
 from typing import List, Dict
 from .block import Block
 from .barrier import CentralizedBarrier, TreeBarrier, ButterflyBarrier
+from .dissemination_barrier import DisseminationBarrier
+from .tournament_barrier import TournamentBarrier
+from .combining_tree_barrier import CombiningTreeBarrier
+from .static_tree_barrier import StaticTreeBarrier
 from .scheduler import Scheduler
 
 class SimulationState(Enum):
@@ -35,13 +39,23 @@ class SimulationModel:
         barrier_interval = settings.get("barrier_interval", 100) 
         barrier_type = settings.get("barrier_type", "CENTRALIZED").upper()
 
-        # 初始化全局栅栏
-        if barrier_type == "TREE":
-             self.barrier = TreeBarrier(limit=num_blocks, logger=self.logger)
-        elif barrier_type == "BUTTERFLY":
-             self.barrier = ButterflyBarrier(limit=num_blocks, logger=self.logger)
-        else:
-             self.barrier = CentralizedBarrier(limit=num_blocks, logger=self.logger)
+        # 初始化全局栅栏（支持7种算法）
+        barrier_type_upper = barrier_type.upper()
+        
+        if barrier_type_upper == "TREE":
+            self.barrier = TreeBarrier(limit=num_blocks, logger=self.logger)
+        elif barrier_type_upper == "BUTTERFLY":
+            self.barrier = ButterflyBarrier(limit=num_blocks, logger=self.logger)
+        elif barrier_type_upper == "DISSEMINATION":
+            self.barrier = DisseminationBarrier(limit=num_blocks, logger=self.logger)
+        elif barrier_type_upper == "TOURNAMENT":
+            self.barrier = TournamentBarrier(limit=num_blocks, logger=self.logger)
+        elif barrier_type_upper == "COMBINING_TREE" or barrier_type_upper == "COMBINING":
+            self.barrier = CombiningTreeBarrier(limit=num_blocks, logger=self.logger)
+        elif barrier_type_upper == "STATIC_TREE" or barrier_type_upper == "STATIC":
+            self.barrier = StaticTreeBarrier(limit=num_blocks, logger=self.logger)
+        else:  # 默认使用集中式栅栏
+            self.barrier = CentralizedBarrier(limit=num_blocks, logger=self.logger)
         
         # 初始化 Blocks
         # Get behavior profile settings
@@ -103,9 +117,23 @@ class SimulationModel:
         """
         获取当前帧的完整状态快照，用于前端/View层渲染。
         """
-        return {
+        snapshot = {
             "tick": self.current_tick,
             "simulation_state": self.state.name,
             "blocks": [b.get_status() for b in self.blocks],
             "barrier": self.barrier.get_status() if self.barrier else {}
         }
+        
+        # 添加性能指标（如果栅栏支持）
+        if self.barrier and hasattr(self.barrier, 'get_metrics'):
+            snapshot["metrics"] = self.barrier.get_metrics()
+        
+        return snapshot
+    
+    def get_barrier_metrics(self) -> Dict:
+        """
+        获取栅栏性能指标
+        """
+        if self.barrier and hasattr(self.barrier, 'get_metrics'):
+            return self.barrier.get_metrics()
+        return {}
