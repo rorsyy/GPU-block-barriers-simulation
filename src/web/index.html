@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPU Barrier Simulation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>GPU Barrier Simulation</h1>
+            <div class="status-bar">
+                <span id="connection-status" class="status-offline">Disconnected</span>
+                <span id="tick-display">Tick: 0</span>
+                <span id="barrier-type-display">Barrier: -</span>
+                <span id="sim-state-display">State: STOPPED</span>
+            </div>
+        </header>
+
+        <main>
+            <div id="grid-container" class="grid-container">
+                <!-- Blocks will be generated here -->
+            </div>
+        </main>
+
+        <aside class="controls">
+            <div class="control-group">
+                <h3>Simulation Control</h3>
+                <button id="btn-start">Start</button>
+                <button id="btn-pause">Pause</button>
+                <button id="btn-step">Step</button>
+            </div>
+            
+            <div class="control-group">
+                <h3>Configuration (Reset)</h3>
+                <label for="select-barrier">Barrier Type:</label>
+                <select id="select-barrier">
+                    <option value="CENTRALIZED">Centralized</option>
+                    <option value="TREE">Tree</option>
+                    <option value="BUTTERFLY">Butterfly</option>
+                </select>
+                <button id="btn-reset" class="btn-danger">Reset & Apply</button>
+            </div>
+            
+            <div class="log-panel">
+                <h3>Event Log</h3>
+                <div id="log-content"></div>
+            </div>
+        </aside>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
