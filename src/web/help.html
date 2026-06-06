@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPU栅栏仿真系统 - 帮助文档</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .help-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 24px;
+            background: var(--bg-secondary);
+            min-height: 100vh;
+        }
+
+        .help-header {
+            border-bottom: 2px solid var(--accent-primary);
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+
+        .help-header h1 {
+            font-size: 1.8rem;
+            color: var(--accent-primary);
+            margin-bottom: 8px;
+        }
+
+        .help-header p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .help-toc {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+        }
+
+        .help-toc h3 {
+            margin: 0 0 12px 0;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .help-toc ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            columns: 3;
+        }
+
+        .help-toc li {
+            padding: 4px 0;
+        }
+
+        .help-toc a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+
+        .help-toc a:hover {
+            text-decoration: underline;
+        }
+
+        .help-section {
+            margin-bottom: 32px;
+        }
+
+        .help-section h2 {
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            border-left: 4px solid var(--accent-primary);
+            padding-left: 12px;
+            margin-bottom: 16px;
+        }
+
+        .help-section h3 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin: 16px 0 8px 0;
+        }
+
+        .help-section p {
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .help-section ul, .help-section ol {
+            margin: 8px 0 16px 0;
+            padding-left: 24px;
+            color: var(--text-secondary);
+        }
+
+        .help-section li {
+            margin: 6px 0;
+            line-height: 1.5;
+        }
+
+        .help-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+        }
+
+        .help-card h4 {
+            margin: 0 0 8px 0;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .help-card p {
+            margin: 0;
+            font-size: 0.85rem;
+        }
+
+        .kbd {
+            display: inline-block;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: var(--text-primary);
+            box-shadow: 0 1px 0 var(--border-color);
+        }
+
+        .help-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 0.85rem;
+        }
+
+        .help-table th {
+            background: var(--bg-tertiary);
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+        }
+
+        .help-table td {
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            vertical-align: top;
+        }
+
+        .help-table tr:hover {
+            background: var(--bg-primary);
+        }
+
+        code {
+            background: var(--bg-tertiary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85em;
+            color: var(--danger-color);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 16px;
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .tip-box {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            border-left: 4px solid var(--accent-primary);
+            border-radius: 0 8px 8px 0;
+            padding: 12px 16px;
+            margin: 12px 0;
+        }
+
+        .tip-box.warning {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-left-color: var(--warning-color);
+        }
+
+        .tip-box.success {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border-left-color: var(--success-color);
+        }
+
+        .tip-box strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="help-container">
+        <a href="index.html" class="back-link">← 返回仿真系统</a>
+        
+        <div class="help-header">
+            <h1>📖 GPU栅栏仿真系统 - 用户指南</h1>
+            <p>版本 1.1 | 技术文档 | 了解系统功能、技术原理与操作方法</p>
+        </div>
+
+        <div class="help-toc">
+            <h3>📑 目录</h3>
+            <ul>
+                <li><a href="#tech-intro">1. 相关技术介绍</a></li>
+                <li><a href="#ui-elements">2. 界面元素含义</a></li>
+                <li><a href="#user-guide">3. 使用说明</a></li>
+            </ul>
+        </div>
+
+        <!-- ================= 第1部分：相关技术介绍 ================= -->
+        <div class="help-section" id="tech-intro">
+            <h2>1. 相关技术介绍</h2>
+            <p>本仿真系统致力于通过软件模拟的方式，将 GPU 硬件层面的隐式同步机制具象化。在开始使用前，了解以下底层硬件与软件算法模型有助于更好地理解仿真内容。</p>
+            
+            <h3>1.1 GPU 体系结构与线程块 (Thread Block)</h3>
+            <p>现代 GPU 采用单指令多线程 (SIMT) 架构。计算任务被划分为多个网格 (Grid)，网格内部又划分为多个<strong>线程块 (Thread Block)</strong>。这些线程块会被调度到 GPU 的流式多处理器 (Streaming Multiprocessor, SM) 上执行。由于硬件资源的限制和各个线程块遇到内存延迟的不同，它们在实际执行时的进度是<strong>高度不平衡的</strong>。</p>
+
+            <h3>1.2 什么是栅栏同步 (Barrier Synchronization)</h3>
+            <p>当不同的线程块需要协同完成一项工作时（例如：规约求和、矩阵分块相乘），必须确保所有相关的线程块都完成了当前阶段的任务，才能进入下一阶段。这种强制所有参与者在某一点汇合的机制称为**栅栏 (Barrier)**。</p>
+            <ul>
+                <li><strong>到达 (Arrive)</strong>：某个线程块完成了阶段任务，向全局注册自己的状态。</li>
+                <li><strong>等待/释放 (Wait/Release)</strong>：早到的线程块必须在此挂起等待；当最后一个线程块到达时，栅栏状态翻转，唤醒（释放）所有等待中的线程块。</li>
+            </ul>
+
+            <h3>1.3 全局内存与原子操作 (Atomic Instructions)</h3>
+            <div class="tip-box">
+                <strong>💡 内存是被动介质</strong>
+                在真实 GPU 中，全局内存 (Global Memory) 只是被动的 DRAM 存储。所有的状态判断和累加操作实际上是由 SM 发起**原子指令**（如 <code>atomicAdd</code>，<code>atomicExch</code>）完成的。这些指令确保了"读-改-写"这一动作在并发执行下绝对安全，但过度使用会造成总线竞争与性能瓶颈。
+            </div>
+
+            <h3>1.4 核心栅栏算法对比</h3>
+            <p>系统内置了三种经典的同步算法，体现了并行计算中"通信拓扑"的演进：</p>
+            <div class="help-card">
+                <h4>🟢 集中式栅栏 (Centralized)</h4>
+                <p><strong>原理：</strong>所有线程块直接对全局内存中的唯一一个 <code>counter</code> 变量执行原子累加。当 <code>counter</code> 达到阈值时，翻转 <code>sense</code> 标志位进行全局广播。</p>
+                <p><strong>特点：</strong>实现最简单，但 N 个块同时抢夺一个内存地址会导致极严重的锁竞争，通信开销达到 <strong>O(N)</strong>，大规模时性能极差。</p>
+            </div>
+            <div class="help-card">
+                <h4>🟡 树形栅栏 (Tree Barrier)</h4>
+                <p><strong>原理：</strong>为了解决单点拥堵问题，将线程块分组绑定到叶子节点，到达信号在内部节点中**自底向上逐层汇聚**；当根节点收集完毕后，释放信号再**自顶向下广播**。</p>
+                <p><strong>特点：</strong>将竞争分散到多个局部节点，总线压力急剧降低，通信复杂度优化至 <strong>O(log N)</strong>。</p>
+            </div>
+            <div class="help-card">
+                <h4>🔵 静态树形栅栏 (Static Tree Barrier)</h4>
+                <p><strong>原理：</strong>在树形结构的基础上，放弃了基于对象的链式引用，改用完全二叉树的**数组索引公式**（如子节点为 `2i+1`, `2i+2`）映射存储节点。</p>
+                <p><strong>特点：</strong>不仅通信复杂度是 <strong>O(log N)</strong>，其紧凑的内存布局还获得了极佳的缓存局部性，是硬件原生实现的最佳选择。</p>
+            </div>
+        </div>
+
+        <!-- ================= 第2部分：前端展示要素 ================= -->
+        <div class="help-section" id="ui-elements">
+            <h2>2. 前端展示的各个要素含义</h2>
+            <p>前端界面由多个高度实时联动的可视化面板组成，用以全面展示仿真运行时的深层状态。</p>
+
+            <h3>2.1 顶部状态栏</h3>
+            <ul>
+                <li><strong>时钟周期 (Tick)：</strong>仿真引擎推进的虚拟时间刻度。</li>
+                <li><strong>栅栏类型：</strong>当前运行的同步算法（CENTRALIZED / TREE / STATIC_TREE）。</li>
+                <li><strong>仿真状态：</strong>系统的运行阶段（STOPPED / RUNNING / PAUSED）。</li>
+                <li><strong>连接状态：</strong>前端与后台 Python 引擎的 WebSocket/HTTP 心跳状态。</li>
+            </ul>
+
+            <h3>2.2 线程块状态监控 (Block Status)</h3>
+            <table class="help-table">
+                <tr>
+                    <th style="width: 140px;">状态标签</th>
+                    <th>含义解释</th>
+                </tr>
+                <tr>
+                    <td><span style="color: #22c55e;">🟢 运行中</span></td>
+                    <td>线程块正在执行其工作负载，工作量进度条会不断增加。</td>
+                </tr>
+                <tr>
+                    <td><span style="color: #eab308;">🟡 等待中</span></td>
+                    <td>该线程块已经完成了当前阶段任务，发起原子指令并到达了栅栏，目前正在挂起等待其他慢速块。</td>
+                </tr>
+                <tr>
+                    <td><span style="color: #ef4444;">🔴 已失败</span></td>
+                    <td>(仅失联模式) 系统随机模拟的宕机或失联故障，该块将不再推进任何工作。</td>
+                </tr>
+                <tr>
+                    <td><span style="color: #6b7280;">⬜ 已完成</span></td>
+                    <td>所有的仿真生命周期结束。</td>
+                </tr>
+            </table>
+
+            <h3>2.3 树形同步拓扑 (Topology Animation)</h3>
+            <p>该面板专为树形算法设计，展示层级合并结构和实时信息流传路径：</p>
+            <div class="help-card">
+                <h4>🌟 橙色脉冲 (通信上传)</h4>
+                <p>当某个线程块到达时，从该叶子节点到其父节点的连线会发出<strong>橙色高亮</strong>。这不仅代表状态传递，更代表着底层正发生一次 <code>atomicAdd</code> 通信操作。</p>
+            </div>
+            <div class="help-card">
+                <h4>✅ 绿色渐隐 (全局释放)</h4>
+                <p>当根节点收齐所有子节点的到达信号后，释放信号（<code>sense</code> 翻转）沿全树自顶向下传播，此时全树的连线会闪烁<strong>绿色</strong>并逐渐隐去，所有等待的线程块被唤醒。</p>
+            </div>
+
+            <h3>2.4 全局内存存储结构 (Global Memory)</h3>
+            <ul>
+                <li><strong>全局内存热力图 (侧边栏)：</strong>展示被动存储介质中各变量（如 `node.count`, `sense`）的值。颜色越深（橙色/红色），说明近期发生原子指令交互的频次越高（即热点拥堵区域）。</li>
+                <li><strong>底层结构代码视图：</strong>展示不同的数据结构特征。树形栅栏会渲染为带有指针的邻接表 `node -> [children]`；而静态树形栅栏会渲染为通过公式计算的连续数组结构 `memory[0], memory[1]...`。</li>
+            </ul>
+
+            <h3>2.5 性能指标 (Metrics)</h3>
+            <ul>
+                <li><strong>同步次数：</strong>整个系统成功完成所有线程块会合释放的累计轮数。</li>
+                <li><strong>平均通信开销：</strong>评判算法优劣的**核心指标**。它统计了为了完成一次同步，SM 到底向全局内存发起了多少次原子操作通信。由于通信代价极大，这个数值越小，算法在 GPU 硬件上的执行效率越高。</li>
+            </ul>
+        </div>
+
+        <!-- ================= 第3部分：使用说明 ================= -->
+        <div class="help-section" id="user-guide">
+            <h2>3. 使用说明</h2>
+            
+            <h3>3.1 仿真参数配置流程</h3>
+            <p>在界面左侧区域，您可以对仿真环境进行参数配置。每次修改后，<strong>必须点击 `🔄 重置并应用` 按钮</strong>，才能将新配置下发至后台仿真引擎，完成环境重建。</p>
+            <ol>
+                <li><strong>设置线程块数目 (2-64)：</strong>设定参与协作的并行单元规模。</li>
+                <li><strong>设置栅栏间隔 (Ticks)：</strong>设定两次同步检查点之间的虚拟时钟间隔。</li>
+                <li><strong>调节工作量方差 (0.0-1.0)：</strong>调节此滑块可控制各线程块工作强度的差异。方差越大，快块与慢块的到达时间差距越明显（模拟重度负载不均衡场景）。</li>
+                <li><strong>选择栅栏类型：</strong>在集中式、树形、静态树中切换。</li>
+                <li><strong>选择仿真模式：</strong>选择正常模式，或切换至失联模式模拟故障死锁场景。</li>
+            </ol>
+
+            <h3>3.2 仿真运行与控制</h3>
+            <table class="help-table">
+                <tr>
+                    <th style="width: 120px;">操作</th>
+                    <th>说明</th>
+                </tr>
+                <tr>
+                    <td><strong>▶️ 启动</strong></td>
+                    <td>启动时钟引擎，系统将自动快速推进（后台步进约50ms/tick）。</td>
+                </tr>
+                <tr>
+                    <td><strong>⏸️ 暂停</strong></td>
+                    <td>冻结当前帧，此时可以从容观察当前所有线程块的状态及全局内存的瞬时数值。</td>
+                </tr>
+                <tr>
+                    <td><strong>⏭️ 单步</strong></td>
+                    <td>精细化观察。每次点击，系统仅推进一个时钟周期，非常适合用来捕捉通信发生瞬间的拓扑动画及内存热点。</td>
+                </tr>
+            </table>
+
+            <h3>3.3 典型实验设计：算法开销对比</h3>
+            <p>为加深对不同算法的理解，建议按以下步骤进行一次对比实验：</p>
+            <ol>
+                <li>将**线程块数目**设为较大的值（如 16 或 32），选择 <strong>集中式 (Centralized)</strong>，点击重置应用。</li>
+                <li>启动仿真，等待发生 2~3 次成功同步后，点击暂停。</li>
+                <li>记录此时面板上的 <strong>平均通信开销</strong>。</li>
+                <li>切换为 <strong>树形 (Tree)</strong>，不修改其他参数，点击重置应用并启动相同周期。</li>
+                <li>再次暂停，对比两者的通信开销，您将直观体会到从 O(N) 到 O(log N) 所带来的巨大通信节约。</li>
+            </ol>
+
+            <h3>3.4 键盘快捷键</h3>
+            <p>为提高操作效率，系统支持以下全局快捷键（前提是鼠标焦点不在任何输入框内）：</p>
+            <table class="help-table">
+                <tr>
+                    <th style="width: 100px;">按键</th>
+                    <th>功能</th>
+                </tr>
+                <tr>
+                    <td><span class="kbd">S</span></td>
+                    <td>启动仿真 (Start)</td>
+                </tr>
+                <tr>
+                    <td><span class="kbd">P</span></td>
+                    <td>暂停仿真 (Pause)</td>
+                </tr>
+                <tr>
+                    <td><span class="kbd">Space</span></td>
+                    <td>单步执行 (Step)</td>
+                </tr>
+                <tr>
+                    <td><span class="kbd">R</span></td>
+                    <td>重置仿真 (Reset)</td>
+                </tr>
+            </table>
+            
+            <div class="tip-box warning">
+                <strong>⚠️ 故障模式排查 (Troubleshooting)</strong>
+                如果在运行中发现仿真长时间停滞不前（时钟仍在走，但无任何同步完成），请检查是否开启了**失联模式**。在该模式下如果某个线程块"宕机"变为红色，而系统配置的却是集中式栅栏算法，它将不可避免地导致死锁现象。
+            </div>
+        </div>
+
+        <div class="help-section" style="border-top: 1px solid var(--border-light); padding-top: 24px; margin-top: 32px;">
+            <p style="text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+                GPU栅栏仿真系统 v1.1 | 帮助文档 | 结合硬件原理，透视软件算法
+            </p>
+        </div>
+    </div>
+</body>
+</html>

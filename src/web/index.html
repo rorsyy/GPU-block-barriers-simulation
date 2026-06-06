@@ -1,84 +1,148 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPU Barrier Simulation</title>
+    <meta name="description" content="GPU栅栏仿真 - 可视化GPU线程栅栏同步机制">
+    <title>GPU栅栏仿真系统</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>GPU Barrier Simulation</h1>
+            <h1>GPU 栅栏仿真系统</h1>
+            <nav class="header-nav">
+                <a href="help.html" class="nav-link" target="_blank">📖 帮助</a>
+            </nav>
             <div class="status-bar">
-                <span id="connection-status" class="status-offline">Disconnected</span>
-                <span id="tick-display">Tick: 0</span>
-                <span id="barrier-type-display">Barrier: -</span>
-                <span id="sim-state-display">State: STOPPED</span>
+                <span id="connection-status" class="status-offline">未连接</span>
+                <span id="tick-display">时钟: 0</span>
+                <span id="barrier-type-display">栅栏: -</span>
+                <span id="sim-state-display">状态: 已停止</span>
             </div>
         </header>
 
         <main>
-            <div id="grid-container" class="grid-container">
-                <!-- Blocks will be generated here -->
+            <h2 class="section-title">线程块状态</h2>
+            <table id="block-table" class="data-table">
+                <thead>
+                    <tr>
+                        <th>线程块 ID</th>
+                        <th>状态</th>
+                        <th>已完成工作量</th>
+                        <th>是否在栅栏</th>
+                    </tr>
+                </thead>
+                <tbody id="block-table-body">
+                    <!-- JS 动态填充 -->
+                </tbody>
+            </table>
+
+            <div id="topology-section" class="topology-section hidden">
+                <h2 class="section-title" style="margin-top: 24px;">同步拓扑结构</h2>
+                <div class="link-legend">
+                    <span style="font-weight: 600; color: var(--text-primary);">链接状态图例：</span>
+                    <div class="link-legend-item">
+                        <div class="link-legend-line legend-default"></div>
+                        <span class="link-legend-text">空闲</span>
+                    </div>
+                    <div class="link-legend-item">
+                        <div class="link-legend-line legend-communicating"></div>
+                        <span class="link-legend-text">正在传递信息</span>
+                    </div>
+                    <div class="link-legend-item">
+                        <div class="link-legend-line legend-released"></div>
+                        <span class="link-legend-text">已释放</span>
+                    </div>
+                </div>
+                <div class="topology-hint">
+                    <span class="hint-icon">💡</span>
+                    <span>当 Block 到达同步点时，从叶子节点到父节点的链接会变为橙色高亮，表示正在向全局内存传递信息。释放后变为绿色渐隐效果。</span>
+                </div>
+                <div id="topology-container" class="topology-container">
+                    <!-- JS 动态生成树 -->
+                </div>
+            </div>
+
+            <div id="memory-structure-section" class="memory-structure-section hidden">
+                <h2 class="section-title" style="margin-top: 24px;">📦 全局内存存储结构</h2>
+                <div id="memory-structure-panel" class="memory-structure-panel">
+                    <!-- JS 动态生成存储结构展示 -->
+                </div>
             </div>
         </main>
 
         <aside class="controls">
             <div class="control-group">
-                <h3>Simulation Control</h3>
-                <button id="btn-start">Start</button>
-                <button id="btn-pause">Pause</button>
-                <button id="btn-step">Step</button>
+                <h3>⚙️ 仿真控制</h3>
+                <button id="btn-start">▶️ 启动</button>
+                <button id="btn-pause">⏸️ 暂停</button>
+                <button id="btn-step">⏭️ 单步</button>
             </div>
             
             <div class="control-group">
-                <h3>Configuration (Reset)</h3>
-                <label for="select-barrier">Barrier Type:</label>
-                <select id="select-barrier">
-                    <option value="CENTRALIZED">Centralized (集中式)</option>
-                    <option value="TREE">Tree (树形)</option>
-                    <option value="BUTTERFLY">Butterfly (蝴蝶形)</option>
-                    <option value="DISSEMINATION">Dissemination (传播式)</option>
-                    <option value="TOURNAMENT">Tournament (锦标赛)</option>
-                    <option value="COMBINING_TREE">Combining Tree (组合树)</option>
-                    <option value="STATIC_TREE">Static Tree (静态树)</option>
+                <h3>🔧 配置</h3>
+                
+                <label for="num-blocks">线程块数目:</label>
+                <input type="number" id="num-blocks" min="2" max="64" value="6" style="width:100%;padding:8px 10px;margin-bottom:8px;background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-color);border-radius:6px;font-family:inherit;font-size:0.82rem;">
+
+
+
+                <label for="select-mode">仿真模式:</label>
+                <select id="select-mode">
+                    <option value="NORMAL">正常模式 (随机工作量)</option>
+                    <option value="FAILURE">故障模式 (超时处理)</option>
                 </select>
-                <button id="btn-reset" class="btn-danger">Reset & Apply</button>
+                
+                <div id="variance-config" style="margin-top: 6px;">
+                    <label for="workload-variance">工作量方差:</label>
+                    <input type="range" id="workload-variance" min="0" max="1" step="0.1" value="0.2">
+                    <span id="variance-display">0.2</span>
+                </div>
+                
+                <label for="select-barrier" style="margin-top: 10px;">栅栏类型:</label>
+                <select id="select-barrier">
+                    <option value="CENTRALIZED">集中式 (Centralized)</option>
+                    <option value="TREE">树形 (Tree)</option>
+                    <option value="STATIC_TREE">静态树 (Static Tree)</option>
+                </select>
+                <button id="btn-reset" class="btn-danger">🔄 重置并应用</button>
             </div>
             
             <div class="control-group">
-                <h3>Performance Metrics (性能指标)</h3>
-                <div id="metrics-panel" class="metrics-panel">
-                    <div class="metric-item">
-                        <span class="metric-label">Sync Count:</span>
-                        <span id="metric-sync-count" class="metric-value">0</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-label">Avg Latency:</span>
-                        <span id="metric-avg-latency" class="metric-value">0</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-label">Avg Wait Time:</span>
-                        <span id="metric-avg-wait" class="metric-value">0</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-label">Contention Count:</span>
-                        <span id="metric-contention" class="metric-value">0</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-label">Throughput:</span>
-                        <span id="metric-throughput" class="metric-value">0</span>
-                    </div>
+                <h3>📊 性能指标</h3>
+                <table class="metrics-table">
+                    <tbody>
+                        <tr>
+                            <td>同步次数</td>
+                            <td id="metric-sync-count" class="metric-value">0</td>
+                        </tr>
+                        <tr>
+                            <td>平均通信</td>
+                            <td id="metric-avg-comm" class="metric-value">0 次</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="control-group">
+                <h3>🧠 全局内存</h3>
+                <div id="memory-panel" class="memory-panel">
+                    <div class="memory-empty">无内存状态</div>
                 </div>
             </div>
             
             <div class="log-panel">
-                <h3>Event Log</h3>
+                <h3>📝 事件日志</h3>
                 <div id="log-content"></div>
             </div>
         </aside>
     </div>
     <script src="app.js"></script>
+    <script src="tree_link_highlight.js"></script>
 </body>
 </html>

@@ -7,7 +7,7 @@ from queue import Queue, Empty
 from model.simulation_model import SimulationModel, SimulationState
 from utils.logger import SimulationLogger
 
-# API Server Handler
+# API 服务器处理程序
 class SimulationAPIHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         if self.path == '/api/control':
@@ -51,6 +51,31 @@ class SimulationAPIHandler(BaseHTTPRequestHandler):
             self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             self.wfile.write(json.dumps(metrics).encode('utf-8'))
+        
+        elif self.path == '/api/memory':
+            # 获取全局内存状态 (NEW)
+            memory_state = {}
+            try:
+                barrier = self.server.controller.model.barrier
+                if barrier and hasattr(barrier, 'get_memory_state'):
+                    memory_state = barrier.get_memory_state()
+                    # 添加元数据
+                    result = {
+                        "barrier_type": barrier.__class__.__name__,
+                        "memory": memory_state,
+                        "size": len(memory_state),
+                        "tick": self.server.controller.model.current_tick
+                    }
+                else:
+                    result = {"error": "Memory state not available"}
+            except Exception as e:
+                result = {"error": str(e)}
+            
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps(result).encode('utf-8'))
         
         else:
             # Serve Static Files
@@ -155,7 +180,8 @@ class SimulationController:
 
     def start(self):
         """启动主循环"""
-        self.model.start()
+        # 不再自动启动模拟，等待前端发送START命令
+        # self.model.start()  # REMOVED: 由前端控制启动
         self.run_loop()
 
     def run_loop(self):

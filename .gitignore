@@ -30,7 +30,15 @@ env/
 # Logs
 *.log
 trace.log
+server_log*.txt
 
 # IDE
 .idea/
 .vscode/
+
+# Coverage
+.coverage
+
+# Scratch files
+scratch.py
+scratch/
