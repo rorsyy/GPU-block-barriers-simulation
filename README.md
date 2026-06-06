@@ -147,6 +147,10 @@ GPU_barrier_similation/
 - `GET /api/metrics`: 获取性能指标
 - `GET /api/memory`: [NEW] 获取栅栏内部内存状态
 
+## 已知问题
+
+- **栅栏拓扑结构图的通信动画 Bug 未修复**：拓扑图中 Block 之间的通信动画存在显示异常，尚未定位和修复。
+
 ## 运行测试
 
 ```bash
